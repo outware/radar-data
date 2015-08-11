@@ -130,4 +130,4 @@ if __name__ == '__main__':
     wks = open_worksheet(args.spreadsheet_name, args.worksheet_title)
     data_rows = wks.get_all_values()[1:]
     quadrants = build_quadrants(data_rows)
-    print json.dumps({'sectors' : quadrants})
+    print json.dumps({'quadrants' : quadrants})
