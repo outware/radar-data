@@ -109,11 +109,17 @@ def build_quadrants(rows):
 
     quadrants_lookup = {} 
     for row in data_rows:
-	quadrant_name, blip, desc, public, company = row[:5]
+	quadrant_name, blip, desc_raw, public_raw, company_raw = row[:5]
 	flag_values = row[5:9]
 	quadrant = get_quadrant(quadrants_lookup, quadrant_name)
 	status = status_from_flags(flag_values)
-	quadrant[status].append(blip)
+	desc = desc_raw.replace('\n', ' ')
+	public = True if len(public_raw.strip()) else False
+	company = True if len(company_raw.strip()) else False
+	quadrant[status].append({'name' : blip,
+				 'description': desc,
+				 'public' : public,
+				 'company' : company})
     return quadrants_lookup.values()
 
 
