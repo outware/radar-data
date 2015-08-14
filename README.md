@@ -18,5 +18,10 @@ Rename the downloaded JSON key to credentials.json and place along side the rada
 python radar.py --spreadsheet "My Radar Data" --worksheet "iOS" > radar.json
 ```
 
+or you can specify multiple worksheets in a json formatted input file (see example file input.json)
+```sh
+python radar-multi.py --inputfile input.json > radar-data.json
+```
+
 ## License
 Refer to [LICENSE](LICENSE).
