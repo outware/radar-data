@@ -110,17 +110,19 @@ def build_quadrants(quadrants, rows, team):
     """Transform rows into quadrants and blips. Take quadrants param, add to it, and return."""
 
     for row in rows:
-        quadrant_name, blip_name, desc_raw, public_raw, company_raw = row[:5]
-        flag_values = row[5:9]
+        quadrant_name, blip_name, desc_raw, public_raw, company_raw, new_or_changed_raw = row[:6]
+        flag_values = row[6:10]
         quadrant = get_quadrant(quadrants, quadrant_name)
         status = status_from_flags(flag_values)
         desc = desc_raw.replace('\n', ' ')
         public = True if len(public_raw.strip()) else False
         company = True if len(company_raw.strip()) else False
+        new_or_changed = True if len(new_or_changed_raw.strip()) else False
         quadrant[status].append({'name' : blip_name,
 				 'description': desc,
 				 'public' : public,
 				 'company' : company,
+                 'new_or_changed' : new_or_changed,
                  'team': team})
     return quadrants
 
