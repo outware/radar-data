@@ -80,14 +80,13 @@ def status_from_flags(flags):
     """Translate list of flags into a radar status.
     Eg. ['', '', 'X', ''] -> 'assess' 
     """
-
     FLAG_INDEX = 1
     TITLE_INDEX = 0
     titled_flags = zip(STATUS_OPTS, flags)
     selected_titled_flag = filter(lambda x: len(x[FLAG_INDEX].strip()),
-				  titled_flags)
+	   titled_flags)
     status = default(lambda: selected_titled_flag[0][TITLE_INDEX],
-		     IndexError, None)
+	   IndexError, None)
     return status
 
 
@@ -108,12 +107,18 @@ def get_quadrant(quadrants, quadrant_name):
 
 def build_quadrants(quadrants, rows, team):
     """Transform rows into quadrants and blips. Take quadrants param, add to it, and return."""
-
     for row in rows:
         quadrant_name, blip_name, desc_raw, public_raw, company_raw, new_or_changed_raw = row[:6]
         flag_values = row[6:10]
+        number_of_flags = len(filter(None, flag_values))
+        if number_of_flags == 1:
+            status = status_from_flags(flag_values)
+        elif number_of_flags == 0:
+            return "~~~~MISSING DATA~~~~"
+        elif number_of_flags == 2:
+            return "~~~~TOO MANY FLAGS~~~~"
+
         quadrant = get_quadrant(quadrants, quadrant_name)
-        status = status_from_flags(flag_values)
         desc = desc_raw.replace('\n', ' ')
         public = True if len(public_raw.strip()) else False
         company = True if len(company_raw.strip()) else False
@@ -153,8 +158,12 @@ if __name__ == '__main__':
             if log : print name + ", " + sheet + ", " + team
 
             wks = open_worksheet(name, sheet)
-            data_rows = wks.get_all_values()[1:]
+            data_rows = wks.get_all_values()[1:] 
             quadrants = build_quadrants(quadrants, data_rows, team)
+            if quadrants == "~~~~MISSING DATA~~~~":
+                raise ValueError('There was missing data in columns 6-10 (status) for one of the rows in spreadsheet: '+name)
+            elif quadrants == "~~~~TOO MANY FLAGS~~~~":
+                raise ValueError('There were too many flags in columns 6-10 (status) for one of the rows in spreadsheet: '+name)
 
         print json.dumps({'quadrants' : quadrants.values()})
         if log : print "*************************************************************"
